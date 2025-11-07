@@ -1,0 +1,109 @@
+<!-- templates/index.html -->
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>AI Cyber Threat Detection - Demo</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f6f8fb; color:#222; display:flex; justify-content:center; padding:30px; }
+    .card { background:white; width:720px; padding:20px; border-radius:10px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+    h2 { margin-top:0; color:#224bcf; text-align: center;}
+    .grid { display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-bottom:12px; }
+    label { display:block; font-size:12px; color:#555; margin-bottom:6px; }
+    input[type="number"] { width:100%; padding:8px; border-radius:6px; border:1px solid #ddd; }
+    button { padding:10px 16px; border-radius:8px; border:none; cursor:pointer; background:#2b78f6; color:white; font-weight:600;}
+    .result { margin-top:16px; padding:12px; border-radius:8px; background:#f1f5ff; }
+    .badge { padding:6px 10px; border-radius:999px; font-weight:600; }
+    .mal { background:#ffd6d6; color:#a10000; }
+    .ben { background:#ddf7e6; color:#0a6b00; }
+    .small { font-size:13px; color:#444; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>AI Cyber Threat Detection — Demo</h2>
+    <p class="small">Fill the numeric network features and click Detect. (This is a demo model for presentation.)</p>
+
+    <div id="form" class="grid">
+      <!-- Inputs will be injected by JS based on features -->
+    </div>
+
+    <div style="margin-top:12px;">
+      <button id="detectBtn">Detect Threat</button>
+      <button id="sampleBtn" style="margin-left:8px;background:#2dd4bf;color:#064e3b">Use Sample Malicious</button>
+    </div>
+
+    <div id="result" class="result" style="display:none;">
+      <div id="outLabel" style="font-size:18px; font-weight:700"></div>
+      <div id="outProb" style="margin-top:8px;"></div>
+      <pre id="raw" style="margin-top:10px; background:#fff; padding:8px; border-radius:6px;"></pre>
+    </div>
+  </div>
+
+<script>
+  const FEATURES = {{ features | tojson }};
+  const form = document.getElementById("form");
+
+  // Create inputs
+  FEATURES.forEach(f => {
+    const wrapper = document.createElement("div");
+    const label = document.createElement("label");
+    label.innerText = f;
+    const input = document.createElement("input");
+    input.type = "number";
+    input.step = "any";
+    input.id = "inp_" + f;
+    input.value = 0;
+    wrapper.appendChild(label);
+    wrapper.appendChild(input);
+    form.appendChild(wrapper);
+  });
+
+  document.getElementById("detectBtn").addEventListener("click", async () => {
+    const payload = {};
+    FEATURES.forEach(f => {
+      payload[f] = parseFloat(document.getElementById("inp_" + f).value) || 0;
+    });
+    const res = await fetch("/predict", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    showResult(data);
+  });
+
+  // sample malicious preset (tends to push model to predict 1)
+  document.getElementById("sampleBtn").addEventListener("click", () => {
+    // These values are synthetic; during demo you can toggle to show benign vs malicious
+    const sample = {duration: 2.5, src_bytes: 3.8, dst_bytes: -1.2, wrong_fragment:0, urgent:0, count: 5.2, srv_count:4.9, time_window: 1.1};
+    FEATURES.forEach(f => { document.getElementById("inp_" + f).value = sample[f] || 0; });
+  });
+
+  function showResult(data) {
+    const resDiv = document.getElementById("result");
+    const outLabel = document.getElementById("outLabel");
+    const outProb = document.getElementById("outProb");
+    const raw = document.getElementById("raw");
+
+    if (data.error) {
+      outLabel.innerHTML = `<span style="color:#a00">Error: ${data.error}</span>`;
+      outProb.innerText = "";
+      raw.innerText = JSON.stringify(data, null, 2);
+      resDiv.style.display = "block";
+      return;
+    }
+
+    const label = data.label;
+    const conf = data.confidence;
+    const prob = data.probabilities;
+    const badge = `<span class="badge ${label==="Malicious" ? "mal" : "ben"}">${label}</span>`;
+
+    outLabel.innerHTML = `${badge} &nbsp; Confidence: ${conf}`;
+    outProb.innerText = `Probabilities — Benign: ${prob.benign}, Malicious: ${prob.malicious}`;
+    raw.innerText = JSON.stringify(data, null, 2);
+    resDiv.style.display = "block";
+  }
+</script>
+</body>
+</html>
