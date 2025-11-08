@@ -1,12 +1,16 @@
 from flask import Flask, render_template, request
 import joblib
 import numpy as np
+import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', template_folder='templates')
 
-# Load your trained model
-model = joblib.load('model_rf.joblib')
-scaler = joblib.load('scaler.joblib')
+# Safely load model and scaler
+model_path = os.path.join(os.path.dirname(__file__), 'model_rf.joblib')
+scaler_path = os.path.join(os.path.dirname(__file__), 'scaler.joblib')
+
+model = joblib.load(model_path)
+scaler = joblib.load(scaler_path)
 
 @app.route('/')
 def home():
@@ -39,20 +43,16 @@ def detect():
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        # Get features from form
+        # Collect form features
         features = [float(x) for x in request.form.values()]
         features = np.array([features])
-        scaled_features = scaler.transform(features)
-        prediction = model.predict(scaled_features)[0]
+        scaled = scaler.transform(features)
+        prediction = model.predict(scaled)[0]
 
-        if prediction == 0:
-            result = "Benign (Safe Traffic)"
-        else:
-            result = "Malicious (Threat Detected)"
-
+        result = "Benign (Safe Traffic)" if prediction == 0 else "Malicious (Threat Detected)"
         return render_template('index.html', prediction_text=result)
     except Exception as e:
-        return render_template('index.html', prediction_text=f"Error: {str(e)}")
+        return render_template('index.html', prediction_text=f"Error: {e}")
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)
+    app.run(debug=True)

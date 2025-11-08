@@ -1,0 +1,34 @@
+cybersecurity
+├── static/
+│   ├── main.png
+│   ├── script.js
+│   └── style.css
+├── templates/
+│   ├── about.html
+│   ├── architecture.html
+│   ├── contact.html
+│   ├── home.html
+│   ├── index.html
+│   ├── overview.html
+│   ├── project.html
+│   └── team.html
+├── unwanted/
+│   ├── Hybrid Framework.docx
+│   ├── notes.docx
+│   ├── pdf cracked.pdf
+│   ├── pj1.jpg
+│   ├── pj2.jpg
+│   ├── pj3.jpg
+│   ├── pj4.jpg
+│   ├── pj5.jpg
+│   ├── pj6.jpg
+│   ├── Schematic-of-Classifications-of-Cyber-Threats.png
+│   └── The-Seven-Layers-of-Cybersecurity.png
+├── app.py
+├── model_rf.joblib
+├── Procfile
+├── render.yaml
+├── requirements.txt
+├── runtime.txt
+├── scaler.joblib
+└── train_model.py

@@ -40,7 +40,7 @@
 <section class="home">
 
     <div class="image">
-        <img src="{{ url_for('static', filename='main.png') }}">
+       <img src="{{ url_for('static', filename='main.png') }}" alt="Main">
     </div>
 
     <div class="content">
@@ -48,7 +48,7 @@
         <p>
             A student research project from Christ College of Engineering and Technology that combines machine learning and deep learning to detect network threats in real-time. This responsive demo allows you to enter simplified numeric network features and see the system's prediction (Benign / Malicious) instantly.
         </p>
-        <a href="{{ url_for('detect') }}">Try Demo / Detect Threat</a>
+        <a href="{{ url_for('detect') }}" class="btn">Try Demo</a>
     </div>
 
 </section>
