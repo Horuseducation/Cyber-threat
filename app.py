@@ -1,42 +1,58 @@
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template, request
+import joblib
+import numpy as np
 
 app = Flask(__name__)
 
-# ---------- Home Page ----------
+# Load your trained model
+model = joblib.load('model_rf.joblib')
+scaler = joblib.load('scaler.joblib')
+
 @app.route('/')
 def home():
-    return send_from_directory('web template', 'index.html')
+    return render_template('home.html')
 
-# ---------- Other Static Pages ----------
 @app.route('/about')
 def about():
-    return send_from_directory('web template', 'about.html')
+    return render_template('about.html')
 
 @app.route('/project')
 def project():
-    return send_from_directory('web template', 'project.html')
+    return render_template('project.html')
 
 @app.route('/contact')
 def contact():
-    return send_from_directory('web template', 'contact.html')
+    return render_template('contact.html')
 
 @app.route('/team')
 def team():
-    return send_from_directory('web template', 'team.html')
+    return render_template('team.html')
 
 @app.route('/architecture')
 def architecture():
-    return send_from_directory('web template', 'architecture.html')
+    return render_template('architecture.html')
 
-@app.route('/overview')
-def overview():
-    return send_from_directory('web template', 'overview.html')
-
-# ---------- Threat Detection Page ----------
 @app.route('/detect')
 def detect():
-    return render_template('index.html')  # loads templates/index.html
+    return render_template('index.html')
 
-# ---------- Run App ----------
+@app.route('/predict', methods=['POST'])
+def predict():
+    try:
+        # Get features from form
+        features = [float(x) for x in request.form.values()]
+        features = np.array([features])
+        scaled_features = scaler.transform(features)
+        prediction = model.predict(scaled_features)[0]
+
+        if prediction == 0:
+            result = "Benign (Safe Traffic)"
+        else:
+            result = "Malicious (Threat Detected)"
+
+        return render_template('index.html', prediction_text=result)
+    except Exception as e:
+        return render_template('index.html', prediction_text=f"Error: {str(e)}")
+
 if __name__ == '__main__':
     app.run(debug=True)

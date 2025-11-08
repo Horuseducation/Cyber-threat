@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
      <!--font awesome link --><script src="https://kit.fontawesome.com/5c0e1e0ce2.js" crossorigin="anonymous"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>A Hybrid Framework — AI Cyber Threat Detection</title>
 </head>
 <body>
@@ -48,7 +48,7 @@
         <p>
             A student research project from Christ College of Engineering and Technology that combines machine learning and deep learning to detect network threats in real-time. This responsive demo allows you to enter simplified numeric network features and see the system's prediction (Benign / Malicious) instantly.
         </p>
-        <button onclick="window.location.href='/detect'" class="btn btn-primary">Try Demo / Detect Threat</button>
+        <a href="/detect" class="btn btn-primary">Try Demo / Detect Threat</a>
     </div>
 
 </section>
@@ -138,6 +138,6 @@
 <!-- footer section ends -->
 
 
-<!-- custom js file link  --> <script src="script.js"></script>
+<!-- custom js file link  --> <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
