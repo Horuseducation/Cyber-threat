@@ -5,7 +5,7 @@ import os
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
-# Safely load model and scaler
+# Load model and scaler
 model_path = os.path.join(os.path.dirname(__file__), 'model_rf.joblib')
 scaler_path = os.path.join(os.path.dirname(__file__), 'scaler.joblib')
 
@@ -36,23 +36,34 @@ def team():
 def architecture():
     return render_template('architecture.html')
 
-@app.route('/detect')
+@app.route('/detect', methods=['GET', 'POST'])
 def detect():
-    return render_template('index.html')
+    # Define features
+    FEATURES = ['duration', 'src_bytes', 'dst_bytes', 'wrong_fragment', 'urgent', 'count', 'srv_count', 'time_window']
 
-@app.route('/predict', methods=['POST'])
-def predict():
-    try:
-        # Collect form features
-        features = [float(x) for x in request.form.values()]
-        features = np.array([features])
-        scaled = scaler.transform(features)
-        prediction = model.predict(scaled)[0]
+    if request.method == 'POST':
+        try:
+            data = request.get_json()
+            features_list = [float(data[f]) for f in FEATURES]
+            features_arr = np.array([features_list])
+            scaled = scaler.transform(features_arr)
+            prediction = model.predict(scaled)[0]
+            proba = model.predict_proba(scaled)[0]
 
-        result = "Benign (Safe Traffic)" if prediction == 0 else "Malicious (Threat Detected)"
-        return render_template('index.html', prediction_text=result)
-    except Exception as e:
-        return render_template('index.html', prediction_text=f"Error: {e}")
+            result = {
+                "label": "Benign" if prediction == 0 else "Malicious",
+                "confidence": round(max(proba), 3),
+                "probabilities": {
+                    "benign": round(proba[0], 3),
+                    "malicious": round(proba[1], 3)
+                }
+            }
+            return result
+        except Exception as e:
+            return {"error": str(e)}
+
+    # GET → render template
+    return render_template('index.html', features=FEATURES)
 
 if __name__ == '__main__':
     app.run(debug=True)
