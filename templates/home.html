@@ -16,20 +16,32 @@
 
     <div id="menu-btn" class="fas fa-bars"></div>
 
-    <nav class="navbar">
-        <ul>
-            <li><a href="home.html">home</a></li>
-            <li><a href="about.html" target="_blank">about</a></li>
-            <li><a href="#">project +</a>
-                <ul>
-                    <li><a href="overview.html" target="_blank">overview</a></li>
-                    <li><a href="architecture.html" target="_blank">architecture</a></li>
-                </ul>
-            </li>
-            <li><a href="team.html" target="_blank">Team</a></li>
-            <li><a href="contact.html" target="_blank">contact</a></li>
-        </ul>
-    </nav>
+  <nav style="background:#224bcf; color:white; padding:12px; border-radius:8px;">
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <div style="font-weight:700; font-size:18px;">AI Cyber Threat Demo</div>
+    <button id="menuBtn" style="font-size:24px; background:none; border:none; color:white; cursor:pointer;">☰</button>
+  </div>
+  <ul id="menu" style="list-style:none; padding:0; margin:12px 0 0 0; display:none;">
+    <li><a href="/" style="color:white; text-decoration:none; display:block; padding:8px 0;">Home</a></li>
+    <li><a href="/about" style="color:white; text-decoration:none; display:block; padding:8px 0;">About</a></li>
+    <li><a href="/overview" style="color:white; text-decoration:none; display:block; padding:8px 0;">Overview</a></li>
+    <li><a href="/project" style="color:white; text-decoration:none; display:block; padding:8px 0;">Project</a></li>
+    <li><a href="/team" style="color:white; text-decoration:none; display:block; padding:8px 0;">Team</a></li>
+  </ul>
+</nav>
+<script>
+  const menuBtn = document.getElementById('menuBtn');
+  const menu = document.getElementById('menu');
+
+  menuBtn.addEventListener('click', () => {
+    if (menu.style.display === 'none' || menu.style.display === '') {
+      menu.style.display = 'block';
+    } else {
+      menu.style.display = 'none';
+    }
+  });
+</script>
+
 
 </header>
 

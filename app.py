@@ -28,6 +28,11 @@ def project():
 def contact():
     return render_template('contact.html')
 
+@app.route('/test')
+def test():
+    return "Test page works!"
+
+
 @app.route('/team')
 def team():
     return render_template('team.html')
