@@ -20,18 +20,13 @@ def home():
 def about():
     return render_template('about.html')
 
-@app.route('/project')
+@app.route('/overview')
 def project():
-    return render_template('project.html')
+    return render_template('overview.html')
 
 @app.route('/contact')
 def contact():
     return render_template('contact.html')
-
-@app.route('/test')
-def test():
-    return "Test page works!"
-
 
 @app.route('/team')
 def team():
